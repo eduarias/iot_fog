@@ -109,7 +109,7 @@ strategy:
 
 ## Execution
 
-Run:
+Run in cloud_connector folder:
 
 ```bash
 python ./cloud_connector.py
