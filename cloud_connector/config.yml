@@ -1,0 +1,49 @@
+devices:
+  read_interval: 5
+  mote01:
+    name: mote01
+    ipv6: bbbb::12:4b00:0615:aaaa
+
+tsdb:
+  influxdb:
+    host: 192.168.1.44
+    port: 8086
+    user: root
+    password: root
+    database: iot_values
+
+cloud:
+  aws:
+    host: A2KYAWFNAAAAAA.iot.eu-west-1.amazonaws.com
+    port: 8883
+    ca_path: ../keys/aws-iot-rootCA.crt
+    cert_path: ../keys/cert.pem
+    key_path: ../keys/privkey.pem
+    strategy:
+      type: Variation
+      parameters:
+        time_low: 60
+        time_high: 1800
+        variability:
+          temperature: 0.2
+          humidity: 1
+          light: 4
+  thethingsio:
+    tokens:
+      mote01: l0M5BEaDdzt40VqGy6omEqZyDY62CxA6XwCJixxxxxx
+    strategy:
+      type: MessageLimit
+      parameters:
+        messages_per_day: 9000
+  pubnub:
+    publish_key: pub-c-b3d6a6e3-ce77-4a89-9e0b-49e52edddddd
+    subscribe_key: sub-c-d74fa040-16f4-11e6-8bc8-0619f89ddddd
+    strategy:
+      type: Variation
+      parameters:
+        time_low: 10
+        time_high: 300
+        variability:
+          temperature: 0.5
+          humidity: 2
+          light: 5

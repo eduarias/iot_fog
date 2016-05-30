@@ -1,0 +1,34 @@
+devices:
+  read_interval: 60
+  mote01:
+    name: mote01
+    ipv6: bbbb::12:4b00:0615:a557
+  mote02:
+    name: mote02
+    ipv6: bbbb::12:4b00:0615:a558
+
+tsdb:
+  influxdb:
+    host: localhost
+    port: 8086
+    user: root
+    password: root
+    database: new_values
+
+cloud:
+  aws:
+    host: A2KYAWFNYZU0I0.iot.eu-west-1.amazonaws.com
+    port: 8883
+    ca_path: ./keys/aws-iot-rootCA.crt
+    cert_path: ./keys/cert.pem
+    key_path: ./keys/privkey.pem
+    strategy:
+      type: Variation
+      parameters:
+        time_low: 60
+        time_high: 300
+        variability:
+          temperature: 0.5
+          humidity: 2
+          light: 2
+

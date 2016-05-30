@@ -1,0 +1,14 @@
+# Python packages requirements
+influxdb
+paho-mqtt
+python-dateutil
+retry
+git+https://github.com/openwsn-berkeley/coap.git@develop
+PyDispatcher
+PyYAML
+pubnub
+
+mock
+sphinx
+coverage
+nose
