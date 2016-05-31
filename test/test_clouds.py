@@ -90,6 +90,6 @@ class TestPubNub(unittest.TestCase):
                 'humidity': 0.5}
         cloud = CloudPubNub(self.publisher_key, self.subscriber_key)
         cloud.insert_data(data, 'mote01')
-        mocked_pubnub.assert_called_once_with(self.publisher_key, self.subscriber_key)
+        mocked_pubnub.assert_called_once_with(subscribe_key=self.subscriber_key, publish_key=self.publisher_key)
         cloud.pubnub.subscribe.assert_called_once()
         self.assertDictEqual(cloud.pubnub.publish.call_args[0][1], data)
