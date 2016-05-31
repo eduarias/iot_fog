@@ -2,12 +2,12 @@ language: python
 python:
   - "2.7"
 # command to install dependencies
-install: 
-  - "pip install -r requirements.txt" 
+install:
+  - "pip install -r requirements.txt"
   - "pip install codacy-coverage"
 # command to run tests
-script: 
+script:
   - nosetests
-  - export CODACY_PROJECT_TOKEN=b087460a24c54622a4fb6c2d2a865d42
+  - export CODACY_PROJECT_TOKEN=caeec8bc9ff24493a299f25dc441e2a7
   - nosetests ./ --with-coverage --cover-package=cloud_connector --cover-xml
   - python-codacy-coverage -r coverage.xml
