@@ -1,6 +1,7 @@
 """
 Defines devices classes.
 """
+import random
 from abc import ABCMeta, abstractmethod
 import logging
 
@@ -76,7 +77,7 @@ class Motes(DeviceBase):
     def __init__(self, name, ipv6):
         super(Motes, self).__init__(name, measurements='environment')
         self._ipv6 = ipv6
-        self._conn = coap.coap()
+        self._conn = coap.coap(udpPort=random.randrange(5683, 6000))
 
     def get_data(self):
         """
