@@ -4,9 +4,13 @@ devices:
     name: mote01
     ipv6: bbbb::12:4b00:0615:aaaa
 
+  mote02:
+    name: mote02
+    ipv6: bbbb::12:4b00:0615:aabb
+
 tsdb:
   influxdb:
-    host: 192.168.1.44
+    host: influxdb
     port: 8086
     user: root
     password: root
