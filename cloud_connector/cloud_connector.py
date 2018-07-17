@@ -95,13 +95,14 @@ class ConfiguratorYaml(object):
         """
         cloud_config = self._config['cloud']
         clouds_list = []
-        for cloud, parameters in cloud_config.iteritems():
-            if 'strategy' in parameters:
-                strategy_config = parameters.pop('strategy')
-                strategy_class = available_strategies[strategy_config['type']]
-                if 'parameters' in strategy_config:
-                    parameters['strategy'] = strategy_class(**strategy_config['parameters'])
-            clouds_list.append(available_clouds[cloud](**parameters))
+        if cloud_config:
+            for cloud, parameters in cloud_config.iteritems():
+                if 'strategy' in parameters:
+                    strategy_config = parameters.pop('strategy')
+                    strategy_class = available_strategies[strategy_config['type']]
+                    if 'parameters' in strategy_config:
+                        parameters['strategy'] = strategy_class(**strategy_config['parameters'])
+                clouds_list.append(available_clouds[cloud](**parameters))
         return clouds_list
 
 
@@ -185,6 +186,7 @@ class Runner(object):
         time.sleep(5)
         [device.close() for device in self._device_list]
         logging.info('Device connection close')
+
 
 if __name__ == '__main__':
 

@@ -1,9 +1,10 @@
 """
 Defines devices classes.
 """
-import random
+import socket
 from abc import ABCMeta, abstractmethod
 import logging
+from contextlib import closing
 
 from random import uniform
 from coap import coap, coapException
@@ -38,6 +39,14 @@ class DeviceBase(object):
         Close devices connections
         """
         pass
+
+    @staticmethod
+    def find_free_port():
+        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+            s.bind(('', 0))
+            available_port = s.getsockname()[1]
+            logging.debug('Available port: {}'.format(available_port))
+            return available_port
 
 
 class SimDevice(DeviceBase):
@@ -77,7 +86,7 @@ class Motes(DeviceBase):
     def __init__(self, name, ipv6):
         super(Motes, self).__init__(name, measurements='environment')
         self._ipv6 = ipv6
-        self._conn = coap.coap(udpPort=random.randrange(5683, 6000))
+        self._conn = coap.coap(udpPort=self.find_free_port())
 
     def get_data(self):
         """
