@@ -190,7 +190,8 @@ class Runner(object):
         """
         logging.info('Closing device connection')
         time.sleep(5)
-        [device.close() for device in self._device_list]
+        if self._device_list:
+            [device.close() for device in self._device_list]
         logging.info('Device connection close')
 
 
