@@ -47,7 +47,7 @@ class ConfiguratorYaml(object):
             self._file_name = 'config.yml'
 
         with open(file_name, 'r') as ymlfile:
-            self._config = yaml.load(ymlfile)
+            self._config = yaml.safe_load(ymlfile)
 
         # Initialize read_interval, it will be set in _configure_devices
         self.read_interval = None
