@@ -2,7 +2,7 @@ import unittest
 # noinspection PyUnresolvedReferences
 import cloud_connector
 from cloud_connector.cloud_connector import Motes
-import mock as mock
+from unittest import mock
 
 
 class TestMotes(unittest.TestCase):

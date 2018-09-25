@@ -2,7 +2,7 @@ from __future__ import print_function
 import unittest
 from datetime import timedelta
 from cloud_connector.cloud_connector import ConfiguratorYaml, Runner
-import mock
+from unittest import mock
 from cloud_connector.clouds import CloudAmazonMQTT
 from cloud_connector.strategies import Variation
 

@@ -7,9 +7,9 @@ import logging
 import paho.mqtt.client as mqttc
 import ssl
 from retry import retry
-from cc_exceptions import ConnectionException
-from strategies import All
-from third_party.thethingsAPI import thethingsiO
+from .cc_exceptions import ConnectionException
+from .strategies import All
+from .third_party.thethingsAPI import thethingsiO
 from pubnub import Pubnub
 
 QOS_LEVEL = 1

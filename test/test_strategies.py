@@ -1,6 +1,5 @@
 from unittest import TestCase
 import datetime
-# noinspection PyUnresolvedReferences
 from cloud_connector.strategies import All, Variation, MessageLimit, TimeLimit
 
 
