@@ -40,6 +40,7 @@ class DeviceBase(object):
 
     @staticmethod
     def find_free_port():
+        """Returns an available port to open a connection"""
         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
             s.bind(('', 0))
             available_port = s.getsockname()[1]
