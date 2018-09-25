@@ -1,36 +1,44 @@
 from __future__ import print_function
 import unittest
 from datetime import timedelta
-# noinspection PyUnresolvedReferences
-import cloud_connector
-# noinspection PyUnresolvedReferences
 from cloud_connector.cloud_connector import ConfiguratorYaml, Runner
-import mock as mock
-# noinspection PyUnresolvedReferences
+import mock
 from cloud_connector.clouds import CloudAmazonMQTT
-# noinspection PyUnresolvedReferences
 from cloud_connector.strategies import Variation
 
 
 class TestConfiguratorYaml(unittest.TestCase):
 
+    def setUp(self):
+        self.config_db = {'user': 'root', 'host': 'localhost', 'password': 'root',
+                          'port': 8086, 'database': 'new_values'}
+        self.config_devices = {'mote01': {'name': 'mote01', 'ipv6': 'bbbb::12:4b00:0615:a557'},
+                               'mote02': {'name': 'mote02', 'ipv6': 'bbbb::12:4b00:0615:a558'}}
+        self.strategy_variation = {'light': 2, 'temperature': 0.5, 'humidity': 2}
+
     @mock.patch('cloud_connector.clouds.mqttc', spec=True)
     @mock.patch('cloud_connector.cloud_connector.Motes', spec=True)
     @mock.patch('cloud_connector.cloud_connector.InfluxDB', spec=True)
     def test_configure(self, mock_influxdb, mock_device, mock_cloud):
-        config_db = {'user': 'root', 'host': 'localhost', 'password': 'root',
-                     'port': 8086, 'database': 'new_values'}
-        config_devices = {'mote01': {'name': 'mote01', 'ipv6': 'bbbb::12:4b00:0615:a557'},
-                          'mote02': {'name': 'mote02', 'ipv6': 'bbbb::12:4b00:0615:a558'}}
-        strategy_variation = {'light': 2, 'temperature': 0.5, 'humidity': 2}
-
         conf = ConfiguratorYaml('test/resources/config.yml')
 
-        mock_influxdb.assert_called_once_with(**config_db)
-        mock_device.assert_has_calls([mock.call(**config_devices['mote01']),
-                                      mock.call(**config_devices['mote02'])],
+        self.influxdb_should_be_configured(mock_influxdb)
+
+        mock_device.assert_has_calls([mock.call(**self.config_devices['mote01']),
+                                      mock.call(**self.config_devices['mote02'])],
                                      any_order=True)
 
+        self.aws_should_be_configured(conf)
+
+    @mock.patch('cloud_connector.cloud_connector.InfluxDB', spec=True)
+    def test_configure_without_devices(self, mock_influxdb):
+        ConfiguratorYaml('test/resources/config_tsdb_only.yml')
+        self.influxdb_should_be_configured(mock_influxdb)
+
+    def influxdb_should_be_configured(self, mock_influxdb):
+        return mock_influxdb.assert_called_once_with(**self.config_db)
+
+    def aws_should_be_configured(self, conf):
         aws = conf.cloud_list[0]
         self.assertIsInstance(aws, CloudAmazonMQTT)
         self.assertIsInstance(aws.strategy, Variation)
@@ -40,11 +48,12 @@ class TestConfiguratorYaml(unittest.TestCase):
                                                          ciphers=None,
                                                          keyfile='./keys/privkey.pem',
                                                          tls_version=5)
-        aws._mqtt_client.connect.assert_called_once_with('A2KYAWFNYZU0I0.iot.eu-west-1.amazonaws.com', 8883, keepalive=60)
+        aws._mqtt_client.connect.assert_called_once_with('A2KYAWFNYZU0I0.iot.eu-west-1.amazonaws.com', 8883,
+                                                         keepalive=60)
         aws._mqtt_client.loop_start.assert_called_once_with()
         self.assertEquals(aws.strategy.time_low, timedelta(minutes=1))
         self.assertEquals(aws.strategy.time_high, timedelta(minutes=5))
-        self.assertDictEqual(aws.strategy.variability, strategy_variation)
+        self.assertDictEqual(aws.strategy.variability, self.strategy_variation)
 
 
 # noinspection PyUnusedLocal

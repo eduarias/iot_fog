@@ -1,0 +1,7 @@
+tsdb:
+  influxdb:
+    host: localhost
+    port: 8086
+    user: root
+    password: root
+    database: new_values
