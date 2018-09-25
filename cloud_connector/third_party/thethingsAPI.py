@@ -1,11 +1,9 @@
 """
 https://github.com/theThings/thethings.iO-python-library
 """
-import urllib
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import json
-import httplib
-import Queue
+import http.client
 import threading
 import time
 import datetime
@@ -51,8 +49,8 @@ class thethingsiO(object): # pragma: no cover
         data = '{"activationCode": "' + actCode + '"}'
 
         try:
-            req = urllib2.Request(self._urlAct, data, self.HEADERS_ACT)
-            response = urllib2.urlopen(req)
+            req = urllib.request.Request(self._urlAct, data, self.HEADERS_ACT)
+            response = urllib.request.urlopen(req)
         except Exception:
             raise
         else:
@@ -61,7 +59,7 @@ class thethingsiO(object): # pragma: no cover
                 self.__initData(result["thingToken"])
                 return True
             else:
-                print(result["message"])
+                print((result["message"]))
                 return False
 
     # key: string
@@ -85,7 +83,7 @@ class thethingsiO(object): # pragma: no cover
         if dt is None:
             self._data.append({'key': str(key), 'value': value})
         else:
-            if not isinstance(dt, basestring):
+            if not isinstance(dt, str):
                 dt = TheThingsAPI.dt2str(dt)
                 self._data.append({'key': str(key), 'value': value,
                                    'datetime': dt})
@@ -107,8 +105,8 @@ class thethingsiO(object): # pragma: no cover
         localData = json.dumps(localData)
         ret = None
         try:
-            req = urllib2.Request(self._urlWrite, localData, self.HEADERS_WRITE)
-            response = urllib2.urlopen(req)
+            req = urllib.request.Request(self._urlWrite, localData, self.HEADERS_WRITE)
+            response = urllib.request.urlopen(req)
             ret = response.getcode()
         except Exception:
             raise
@@ -143,24 +141,24 @@ class thethingsiO(object): # pragma: no cover
         getUrl += "?limit=" + str(limit)
 
         if startDate is not None:
-            if not isinstance(startDate, basestring):
+            if not isinstance(startDate, str):
                 startDate = TheThingsAPI.dt2str(startDate)
             getUrl += "&startDate=" + startDate
         if endDate is not None:
-            if not isinstance(endDate, basestring):
+            if not isinstance(endDate, str):
                 endDate = TheThingsAPI.dt2str(endDate)
             getUrl += "&endDate=" + endDate
         result = None
         try:
-            req = urllib2.Request(getUrl, None, self.HEADERS_READ)
-            response = urllib2.urlopen(req, timeout=to)
+            req = urllib.request.Request(getUrl, None, self.HEADERS_READ)
+            response = urllib.request.urlopen(req, timeout=to)
             result = json.loads(response.read())
 
         except Exception as e:
             if str(e) == "HTTP Error 404: Not Found":
                 result = 0
             else:
-                print "Error reading: " + str(e)
+                print(("Error reading: " + str(e)))
 
         return result
 
@@ -174,7 +172,7 @@ class thethingsiO(object): # pragma: no cover
                 A python queue to read the data.
         """
 
-        queue = Queue.Queue()
+        queue = queue.Queue()
         t = threading.Thread(target=self.__subscribeDaemon,
                 args = (queue,))
         t.daemon = True
@@ -240,7 +238,7 @@ class thethingsiO(object): # pragma: no cover
         """
 
         connected = False
-        if not isinstance(dt, basestring):
+        if not isinstance(dt, str):
             dt = TheThingsAPI.dt2str(dt)
 
         localLog = ('{"values":[{"key":"'+self._monitorAux +
@@ -248,9 +246,9 @@ class thethingsiO(object): # pragma: no cover
 
         while not connected:
             try:
-                req = urllib2.Request(self._urlWrite,
+                req = urllib.request.Request(self._urlWrite,
                         localLog, self.HEADERS_WRITE)
-                response = urllib2.urlopen(req)
+                response = urllib.request.urlopen(req)
             except Exception as e:
                 print(("exception while trying to log: " +
                         str(e)))
@@ -328,11 +326,11 @@ class thethingsiO(object): # pragma: no cover
         """
         localLog = '{"values":[{"key":"log","value":"'+ str(txt) + '"}]}'
         try:
-            req = urllib2.Request(self._urlWrite, localLog,
+            req = urllib.request.Request(self._urlWrite, localLog,
             self.HEADERS_WRITE)
-            response = urllib2.urlopen(req)
+            response = urllib.request.urlopen(req)
         except Exception as e:
-            print("exception while trying to log: " +str(e))
+            print(("exception while trying to log: " +str(e)))
             pass
 
     def __errWrite__(self, txt):
@@ -343,11 +341,11 @@ class thethingsiO(object): # pragma: no cover
         """
         localLog = '{"values":[{"key":"err","value":"'+ str(txt) + '"}]}'
         try:
-            req = urllib2.Request(self._urlWrite, localLog,
+            req = urllib.request.Request(self._urlWrite, localLog,
             self.HEADERS_WRITE)
-            response = urllib2.urlopen(req)
+            response = urllib.request.urlopen(req)
         except Exception as e:
-            print("exception while trying to log: " +str(e))
+            print(("exception while trying to log: " +str(e)))
             pass
 
     def __checkSync(self,queue):
@@ -407,7 +405,7 @@ class thethingsiO(object): # pragma: no cover
 
             # post process retrived resources if any
             nr = len(data)
-            print("retrieved " + str(nr) + " lost files")
+            print(("retrieved " + str(nr) + " lost files"))
 
             if nr != 0:
                 daux = []
@@ -459,12 +457,12 @@ class thethingsiO(object): # pragma: no cover
 
             # send subscribe request
             try:
-                conn = httplib.HTTPSConnection('api.thethings.io',
+                conn = http.client.HTTPSConnection('api.thethings.io',
                 timeout=10)
                 conn.request('GET','/v2/things/' + self._token +
                 '?keepAlive=60000', None, self.HEADERS_SUBS)
             except Exception as e:
-                print "Connection Error, retrying: " + str(e)
+                print(("Connection Error, retrying: " + str(e)))
                 self.__errWrite("subscribe error: " +str(e))
                 time.sleep(10)
                 continue
@@ -475,7 +473,7 @@ class thethingsiO(object): # pragma: no cover
             try:
                 r1 = conn.getresponse()
             except Exception as e:
-                print "Error waiting first response: " + str(e)
+                print(("Error waiting first response: " + str(e)))
                 self.__errWrite("subscribe error: " +str(e))
                 continue
 
@@ -484,13 +482,13 @@ class thethingsiO(object): # pragma: no cover
             try:
                 data = self.__parse(r1)
             except Exception as e:
-                print "error waiting success: " + str(e)
+                print(("error waiting success: " + str(e)))
                 self.__errWrite("subscribe error: " +str(e))
                 continue
 
             # Check if server is happy
             if data["status"] != "success":
-                print "Error: " + data["status"]
+                print(("Error: " + data["status"]))
                 self.__errWrite("subscribe error: " +
                 data["status"])
             else:
@@ -507,8 +505,8 @@ class thethingsiO(object): # pragma: no cover
                     #print("timeout")
                     toCount += 1
                     if toCount >= 18:
-                        print ("Error, no keep alive "+
-                        "received. Resetting connection")
+                        print(("Error, no keep alive " +
+                        "received. Resetting connection"))
                         self.__errWrite("subscribe " +
                         "error: No keep alive")
                         break
