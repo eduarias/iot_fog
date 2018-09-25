@@ -34,7 +34,7 @@ class DeviceBase(object):
 
     def close(self):
         """
-        Close devices connections
+        Close devices connections (if necessary)
         """
         pass
 
@@ -65,5 +65,5 @@ class SimDevice(DeviceBase):
         :rtype: dict.
         """
         res = {'temperature': round(uniform(20, 25), 2),
-               'humidity': round(uniform(0.4, 0.6), 2)}
+               'humidity': round(uniform(40, 65), 2)}
         return res
