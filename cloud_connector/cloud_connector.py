@@ -80,7 +80,10 @@ class ConfiguratorYaml(object):
         :return: A list of devices objects initialized
         :rtype: list.
         """
-        devices_config = self._config['devices']
+        try:
+            devices_config = self._config['devices']
+        except KeyError:
+            return None
         self.read_interval = devices_config.pop('read_interval')
         devices = []
         for device in devices_config.values():
@@ -93,16 +96,19 @@ class ConfiguratorYaml(object):
         :return: A list of cloud services objects initialized
         :rtype: list.
         """
-        cloud_config = self._config['cloud']
+        try:
+            cloud_config = self._config['cloud']
+        except KeyError:
+            return None
+
         clouds_list = []
-        if cloud_config:
-            for cloud, parameters in cloud_config.iteritems():
-                if 'strategy' in parameters:
-                    strategy_config = parameters.pop('strategy')
-                    strategy_class = available_strategies[strategy_config['type']]
-                    if 'parameters' in strategy_config:
-                        parameters['strategy'] = strategy_class(**strategy_config['parameters'])
-                clouds_list.append(available_clouds[cloud](**parameters))
+        for cloud, parameters in cloud_config.iteritems():
+            if 'strategy' in parameters:
+                strategy_config = parameters.pop('strategy')
+                strategy_class = available_strategies[strategy_config['type']]
+                if 'parameters' in strategy_config:
+                    parameters['strategy'] = strategy_class(**strategy_config['parameters'])
+            clouds_list.append(available_clouds[cloud](**parameters))
         return clouds_list
 
 
@@ -184,7 +190,8 @@ class Runner(object):
         """
         logging.info('Closing device connection')
         time.sleep(5)
-        [device.close() for device in self._device_list]
+        if self._device_list:
+            [device.close() for device in self._device_list]
         logging.info('Device connection close')
 
 
