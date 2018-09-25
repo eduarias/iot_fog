@@ -1,5 +1,4 @@
 import unittest
-from unittest import mock
 import socket
 
 from cloud_connector.cloud_connector import SimDevice
