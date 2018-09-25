@@ -1,5 +1,5 @@
 FROM python:3.6-alpine3.8
-MAINTAINER Eduardo Arias
+MAINTAINER Eduardo Arias <eduarias@users.noreply.github.com>
 
 RUN apk add --update \
     git \
