@@ -3,16 +3,16 @@ Makes the setup of the classes through configuration and run.
 """
 import logging
 
-from .devices import SimDevice
-from .tsdb import InfluxDB
-from .clouds import CloudAmazonMQTT, CloudThingsIO, CloudPubNub
+from cloud_connector.devices import SimDevice
+from cloud_connector.tsdb import InfluxDB
+from cloud_connector.clouds import CloudAmazonMQTT, CloudThingsIO, CloudPubNub
 import sys
 import yaml
 from sched import scheduler
 import time
 import traceback
-from .cc_exceptions import ConnectionTimeout, ConfigurationError, InputDataError
-from .strategies import All, Variation, MessageLimit, TimeLimit
+from cloud_connector.cc_exceptions import ConnectionTimeout, ConfigurationError, InputDataError
+from cloud_connector.strategies import All, Variation, MessageLimit, TimeLimit
 import socket
 
 logging.basicConfig(level=logging.DEBUG,

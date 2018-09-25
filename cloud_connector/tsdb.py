@@ -7,7 +7,7 @@ import logging
 from influxdb import InfluxDBClient
 import dateutil
 import requests
-from .cc_exceptions import ConnectionTimeout
+from cloud_connector.cc_exceptions import ConnectionTimeout
 
 
 INFLUXDB_TIMEOUT = 5
