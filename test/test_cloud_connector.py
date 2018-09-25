@@ -12,20 +12,20 @@ class TestConfiguratorYaml(unittest.TestCase):
     def setUp(self):
         self.config_db = {'user': 'root', 'host': 'localhost', 'password': 'root',
                           'port': 8086, 'database': 'new_values'}
-        self.config_devices = {'mote01': {'name': 'mote01', 'ipv6': 'bbbb::12:4b00:0615:a557'},
-                               'mote02': {'name': 'mote02', 'ipv6': 'bbbb::12:4b00:0615:a558'}}
+        self.config_devices = {'sim01': {'name': 'sim01'},
+                               'sim02': {'name': 'sim02'}}
         self.strategy_variation = {'light': 2, 'temperature': 0.5, 'humidity': 2}
 
     @mock.patch('cloud_connector.clouds.mqttc', spec=True)
-    @mock.patch('cloud_connector.cloud_connector.Motes', spec=True)
+    @mock.patch('cloud_connector.cloud_connector.SimDevice', spec=True)
     @mock.patch('cloud_connector.cloud_connector.InfluxDB', spec=True)
     def test_configure(self, mock_influxdb, mock_device, mock_cloud):
         conf = ConfiguratorYaml('test/resources/config.yml')
 
         self.influxdb_should_be_configured(mock_influxdb)
 
-        mock_device.assert_has_calls([mock.call(**self.config_devices['mote01']),
-                                      mock.call(**self.config_devices['mote02'])],
+        mock_device.assert_has_calls([mock.call(**self.config_devices['sim01']),
+                                      mock.call(**self.config_devices['sim02'])],
                                      any_order=True)
 
         self.aws_should_be_configured(conf)
@@ -58,7 +58,7 @@ class TestConfiguratorYaml(unittest.TestCase):
 
 # noinspection PyUnusedLocal
 @mock.patch('cloud_connector.clouds.mqttc', spec=True)
-@mock.patch('cloud_connector.cloud_connector.Motes', spec=True)
+@mock.patch('cloud_connector.cloud_connector.SimDevice', spec=True)
 @mock.patch('cloud_connector.cloud_connector.InfluxDB', spec=True)
 class TestRunner(unittest.TestCase):
 

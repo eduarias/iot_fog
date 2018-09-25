@@ -2,6 +2,8 @@
 Makes the setup of the classes through configuration and run.
 """
 import logging
+
+from .devices import SimDevice
 from .tsdb import InfluxDB
 from .clouds import CloudAmazonMQTT, CloudThingsIO, CloudPubNub
 import sys
@@ -86,7 +88,7 @@ class ConfiguratorYaml(object):
         self.read_interval = devices_config.pop('read_interval')
         devices = []
         for device in devices_config.values():
-            devices.append(Motes(**device))
+            devices.append(SimDevice(**device))
         return devices
 
     def _configure_cloud(self):
@@ -101,7 +103,7 @@ class ConfiguratorYaml(object):
             return None
 
         clouds_list = []
-        for cloud, parameters in cloud_config.iteritems():
+        for cloud, parameters in cloud_config.items():
             if 'strategy' in parameters:
                 strategy_config = parameters.pop('strategy')
                 strategy_class = available_strategies[strategy_config['type']]
