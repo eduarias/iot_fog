@@ -1,7 +1,7 @@
 import unittest
 import socket
 
-from cloud_connector.cloud_connector import SimDevice
+from cloud_connector.devices import SimDevice
 
 
 class TestDevice(unittest.TestCase):

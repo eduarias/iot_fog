@@ -56,7 +56,7 @@ class ConfiguratorYaml(object):
             self.device_list = self._configure_devices()
             self.cloud_list = self._configure_cloud()
         except Exception as exception:
-            msg = '{}: {}'.format(exception.__class__.__name__, exception.message)
+            msg = '{}: {}'.format(exception.__class__.__name__, exception)
             logging.critical('Configuration Error: {}'.format(msg))
             traceback.print_exc(file=sys.stdout)
             raise ConfigurationError(msg)

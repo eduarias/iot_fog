@@ -1,7 +1,7 @@
 from __future__ import print_function
 import unittest
 from datetime import timedelta
-from cloud_connector.cloud_connector import ConfiguratorYaml, Runner
+from cloud_connector.runner import ConfiguratorYaml, Runner
 from unittest import mock
 from cloud_connector.clouds import CloudAmazonMQTT
 from cloud_connector.strategies import Variation
@@ -17,8 +17,8 @@ class TestConfiguratorYaml(unittest.TestCase):
         self.strategy_variation = {'light': 2, 'temperature': 0.5, 'humidity': 2}
 
     @mock.patch('cloud_connector.clouds.mqttc', spec=True)
-    @mock.patch('cloud_connector.cloud_connector.SimDevice', spec=True)
-    @mock.patch('cloud_connector.cloud_connector.InfluxDB', spec=True)
+    @mock.patch('cloud_connector.devices.SimDevice', spec=True)
+    @mock.patch('cloud_connector.tsdb.InfluxDB', spec=True)
     def test_configure(self, mock_influxdb, mock_device, mock_cloud):
         conf = ConfiguratorYaml('test/resources/config.yml')
 
@@ -30,7 +30,7 @@ class TestConfiguratorYaml(unittest.TestCase):
 
         self.aws_should_be_configured(conf)
 
-    @mock.patch('cloud_connector.cloud_connector.InfluxDB', spec=True)
+    @mock.patch('cloud_connector.tsdb.InfluxDB', spec=True)
     def test_configure_without_devices(self, mock_influxdb):
         ConfiguratorYaml('test/resources/config_tsdb_only.yml')
         self.influxdb_should_be_configured(mock_influxdb)
@@ -58,8 +58,8 @@ class TestConfiguratorYaml(unittest.TestCase):
 
 # noinspection PyUnusedLocal
 @mock.patch('cloud_connector.clouds.mqttc', spec=True)
-@mock.patch('cloud_connector.cloud_connector.SimDevice', spec=True)
-@mock.patch('cloud_connector.cloud_connector.InfluxDB', spec=True)
+@mock.patch('cloud_connector.tsdb.SimDevice', spec=True)
+@mock.patch('cloud_connector.tsdb.InfluxDB', spec=True)
 class TestRunner(unittest.TestCase):
 
     def setUp(self):
