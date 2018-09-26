@@ -6,11 +6,11 @@
 
 Install system prerequisites:
 
-Requires Python > 2.7.9. Version 3 is not supported by coap library and tls v1.2 is only supported for > 2.7.9.
+Requires Python > 3.3.
 
 ```bash
 sudo apt-get update
-sudo apt-get install python-pip python-dev
+sudo apt-get install python3-pip python3-dev
 ```
 
 Install application libraries:
@@ -22,16 +22,17 @@ sudo pip install -r requirements.txt
 ## Configuration
 In the folder *cloud_connector* use the file *config.yml* to configure the application. There are sections for device, tsdb and cloud
 
-### Device
-Only OpenMote devices supported at this moment.
+### Devices
+Openmote is not currently, since coap library by OpenWSN does not support Python 3. At this moment this section can be simulated only.
+
+There is a version for Python 2.7 that supports Openmote: (https://github.com/eduarias/iot_fog_openmote) 
 
 To configure the devices, there should be a read interval (in seconds) and for each device the ipv6 address ana a name
 ```yaml
 devices:
   read_interval: 5
-  mote01:
+  sim01:
     name: mote01
-    ipv6: bbbb::12:4b00:0615:aaaa
 ```
 
 ### TSDB
@@ -114,5 +115,5 @@ strategy:
 Run in cloud_connector folder:
 
 ```bash
-python ./cloud_connector.py
+python ./runner.py
 ```

@@ -2,10 +2,9 @@ from __future__ import absolute_import, print_function
 import unittest
 # noinspection PyUnresolvedReferences
 import cloud_connector
-# noinspection PyUnresolvedReferences
-from cloud_connector.cloud_connector import InfluxDB
+from cloud_connector.tsdb import InfluxDB
 from influxdb.resultset import ResultSet
-import mock as mock
+from unittest import mock
 from datetime import datetime
 from dateutil.tz import tzutc
 import requests

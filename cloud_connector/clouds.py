@@ -7,9 +7,9 @@ import logging
 import paho.mqtt.client as mqttc
 import ssl
 from retry import retry
-from cc_exceptions import ConnectionException
-from strategies import All
-from third_party.thethingsAPI import thethingsiO
+from cloud_connector.cc_exceptions import ConnectionException
+from cloud_connector.strategies import All
+from cloud_connector.third_party.thethingsAPI import thethingsiO
 from pubnub import Pubnub
 
 QOS_LEVEL = 1
@@ -168,7 +168,7 @@ class CloudThingsIO(CloudServiceBase):
         self.name = 'thethings.io'
         self._tokens = tokens
         self._thethings_connector = {}
-        for device_name, token in tokens.iteritems():
+        for device_name, token in tokens.items():
             self._thethings_connector[device_name] = thethingsiO(token)
 
     def _send_data(self, data, device_name):
@@ -180,7 +180,7 @@ class CloudThingsIO(CloudServiceBase):
         :rtype: str.
         """
         tt = self._thethings_connector[device_name]
-        for variable, info in data.iteritems():
+        for variable, info in data.items():
             tt.addVar(variable, info)
         try:
             logging.debug('Sending data to thethings.iO')

@@ -1,12 +1,9 @@
 devices:
   read_interval: 5
-  mote01:
-    name: mote01
-    ipv6: bbbb::12:4b00:0615:aaaa
-
-  mote02:
-    name: mote02
-    ipv6: bbbb::12:4b00:0615:aabb
+  sim01:
+    name: sim01
+  sim02:
+    name: sim02
 
 tsdb:
   influxdb:
