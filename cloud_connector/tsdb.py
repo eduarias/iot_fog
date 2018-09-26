@@ -97,7 +97,7 @@ class InfluxDB(TSDatabase):
     :param database: Database name
     """
     def __init__(self, host, port, user, password, database):
-        super(InfluxDB, self).__init__(host, port, user, password, database)
+        super().__init__(host, port, user, password, database)
 
     def connect(self, parameters):
         """
