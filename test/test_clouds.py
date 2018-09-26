@@ -1,9 +1,7 @@
 import json
 import unittest
-# noinspection PyUnresolvedReferences
 from cloud_connector.clouds import CloudAmazonMQTT, QOS_LEVEL, CloudThingsIO, thethingsiO, CloudPubNub
-import mock as mock
-# noinspection PyUnresolvedReferences
+from unittest import mock
 from cloud_connector.cc_exceptions import ConnectionException
 import ssl
 

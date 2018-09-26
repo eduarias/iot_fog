@@ -1,4 +1,5 @@
-FROM python:2.7.15-alpine3.8
+FROM python:3.6-alpine3.8
+MAINTAINER Eduardo Arias <eduarias@users.noreply.github.com>
 
 RUN apk add --update \
     git \
@@ -13,4 +14,4 @@ COPY ./cloud_connector /cloud_connector
 
 WORKDIR /cloud_connector
 
-CMD ["python", "/cloud_connector/cloud_connector.py"]
+CMD ["python", "cloud_connector.py"]

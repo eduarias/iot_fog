@@ -7,7 +7,7 @@ import logging
 from influxdb import InfluxDBClient
 import dateutil
 import requests
-from cc_exceptions import ConnectionTimeout
+from cloud_connector.cc_exceptions import ConnectionTimeout
 
 
 INFLUXDB_TIMEOUT = 5
@@ -97,7 +97,7 @@ class InfluxDB(TSDatabase):
     :param database: Database name
     """
     def __init__(self, host, port, user, password, database):
-        super(InfluxDB, self).__init__(host, port, user, password, database)
+        super().__init__(host, port, user, password, database)
 
     def connect(self, parameters):
         """
@@ -120,7 +120,7 @@ class InfluxDB(TSDatabase):
         """
         try:
             dbs_dicts = self.db.get_list_database()
-        except requests.exceptions.ConnectTimeout:
+        except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
             err_msg = 'Unable to connect to InfluxDB {}'.format(self.parameters)
             logging.error(err_msg)
             raise ConnectionTimeout(err_msg)

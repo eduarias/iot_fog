@@ -99,7 +99,7 @@ class Variation(StrategyBase):
             return False
 
         last_data_measures = self.last_data_sent['data']
-        for measure, value in data.iteritems():
+        for measure, value in data.items():
             try:
                 if abs(last_data_measures[measure] - value) > self.variability[measure]:
                     return self.ok_to_insert_data(data)
