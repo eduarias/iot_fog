@@ -120,7 +120,7 @@ class InfluxDB(TSDatabase):
         """
         try:
             dbs_dicts = self.db.get_list_database()
-        except requests.exceptions.ConnectTimeout:
+        except (requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError):
             err_msg = 'Unable to connect to InfluxDB {}'.format(self.parameters)
             logging.error(err_msg)
             raise ConnectionTimeout(err_msg)
