@@ -14,4 +14,4 @@ COPY ./cloud_connector /cloud_connector
 
 WORKDIR /cloud_connector
 
-CMD ["python", "cloud_connector.py"]
+CMD ["python", "runner.py"]
