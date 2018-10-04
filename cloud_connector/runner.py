@@ -178,9 +178,9 @@ class Runner(object):
         except KeyboardInterrupt:
             self.stop()
         except InputDataError as e:
-            logging.error('Unable to read input data. {}'.format(e.message))
+            logging.error('Unable to read input data. {}'.format(e))
         except Exception as e:
-            logging.error('Unexpected error: {0} \n{1}'.format(e.message, traceback.print_exc()))
+            logging.error('Unexpected error: {0} \n{1}'.format(e, traceback.print_exc()))
         finally:
             logging.debug('Run complete, waiting for next run.')
         logging.info('Run tooks {} seconds'.format(time.time() - start))
