@@ -1,6 +1,6 @@
 import json
 import unittest
-from cloud_connector.clouds import CloudAmazonMQTT, QOS_LEVEL, CloudThingsIO, thethingsiO, CloudPubNub
+from cloud_connector.data.clouds import CloudAmazonMQTT, QOS_LEVEL, CloudThingsIO, thethingsiO, CloudPubNub
 from unittest import mock
 from cloud_connector.cc_exceptions import ConnectionException
 import ssl
@@ -66,7 +66,7 @@ class TestCloudThingsIO(unittest.TestCase):
         self.assertEqual(len(cloud._thethings_connector), 2)
         self.assertIsInstance(cloud._thethings_connector['mote02'], thethingsiO)
 
-    @mock.patch('cloud_connector.clouds.thethingsiO', spec=True)
+    @mock.patch('cloud_connector.data.clouds.thethingsiO', spec=True)
     def test_insert_data(self, mocked_thethingsiO):
         data = {'temperature': 22,
                 'humidity': 0.5}
@@ -82,7 +82,7 @@ class TestPubNub(unittest.TestCase):
         self.publisher_key = 'pub-c-b3d6a6e3-ce77-4a89-9e0b-49e52xxxxxxx'
         self.subscriber_key = 'sub-c-d74fa040-16f4-11e6-8bc8-0619fxxxxxxx'
 
-    @mock.patch('cloud_connector.clouds.Pubnub', spec=True)
+    @mock.patch('cloud_connector.data.clouds.Pubnub', spec=True)
     def test_insert_data(self, mocked_pubnub):
         data = {'temperature': 22,
                 'humidity': 0.5}

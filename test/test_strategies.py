@@ -1,6 +1,6 @@
 from unittest import TestCase
 import datetime
-from cloud_connector.strategies import All, Variation, MessageLimit, TimeLimit
+from cloud_connector.data.strategies import All, Variation, MessageLimit, TimeLimit
 
 
 class TestAll(TestCase):

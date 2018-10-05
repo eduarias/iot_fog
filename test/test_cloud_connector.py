@@ -3,8 +3,8 @@ import unittest
 from datetime import timedelta
 from cloud_connector.runner import ConfiguratorYaml, Runner
 from unittest import mock
-from cloud_connector.clouds import CloudAmazonMQTT
-from cloud_connector.strategies import Variation
+from cloud_connector.data.clouds import CloudAmazonMQTT
+from cloud_connector.data.strategies import Variation
 
 
 class TestConfiguratorYaml(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestConfiguratorYaml(unittest.TestCase):
                                'sim02': {'name': 'sim02'}}
         self.strategy_variation = {'light': 2, 'temperature': 0.5, 'humidity': 2}
 
-    @mock.patch('cloud_connector.clouds.mqttc', spec=True)
+    @mock.patch('cloud_connector.data.clouds.mqttc', spec=True)
     @mock.patch('cloud_connector.runner.SimDevice', spec=True)
     @mock.patch('cloud_connector.runner.InfluxDB', spec=True)
     def test_configure(self, mock_influxdb, mock_device, mock_cloud):
@@ -57,7 +57,7 @@ class TestConfiguratorYaml(unittest.TestCase):
 
 
 # noinspection PyUnusedLocal
-@mock.patch('cloud_connector.clouds.mqttc', spec=True)
+@mock.patch('cloud_connector.data.clouds.mqttc', spec=True)
 @mock.patch('cloud_connector.runner.SimDevice', spec=True)
 @mock.patch('cloud_connector.runner.InfluxDB', spec=True)
 class TestRunner(unittest.TestCase):

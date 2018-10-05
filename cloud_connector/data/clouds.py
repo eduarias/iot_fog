@@ -8,7 +8,7 @@ import paho.mqtt.client as mqttc
 import ssl
 from retry import retry
 from cloud_connector.cc_exceptions import ConnectionException
-from cloud_connector.strategies import All
+from cloud_connector.data.strategies import All
 from cloud_connector.third_party.thethingsAPI import thethingsiO
 from pubnub import Pubnub
 
@@ -179,15 +179,18 @@ class CloudThingsIO(CloudServiceBase):
         :return: Class name.
         :rtype: str.
         """
-        tt = self._thethings_connector[device_name]
-        for variable, info in data.items():
-            tt.addVar(variable, info)
         try:
-            logging.debug('Sending data to thethings.iO')
-            response_code = tt.write()
-            logging.info('Sent to thethings.io with response code {}: {}:{}'.format(response_code, device_name, data))
-        except Exception:
-            logging.error('Unable to send data to thethings.io')
+            tt = self._thethings_connector[device_name]
+            for variable, info in data.items():
+                tt.addVar(variable, info)
+            try:
+                logging.debug('Sending data to thethings.iO')
+                response_code = tt.write()
+                logging.info('Sent to thethings.io with response code {}: {}:{}'.format(response_code, device_name, data))
+            except Exception:
+                logging.error('Unable to send data to thethings.io')
+        except KeyError:
+            logging.warning('Device <{0}> not found on thethingsio'.format(device_name))
 
 
 class CloudPubNub(CloudServiceBase):

@@ -4,16 +4,17 @@ Makes the setup of the classes through configuration and run.
 import logging
 from threading import Thread
 
+from cloud_connector.data.sender import DataSender
 from cloud_connector.devices import SimDevice
-from cloud_connector.tsdb import InfluxDB
-from cloud_connector.clouds import CloudAmazonMQTT, CloudThingsIO, CloudPubNub
+from cloud_connector.data.tsdb import InfluxDB
+from cloud_connector.data.clouds import CloudAmazonMQTT, CloudThingsIO, CloudPubNub
 import sys
 import yaml
 from sched import scheduler
 import time
 import traceback
 from cloud_connector.cc_exceptions import ConnectionTimeout, ConfigurationError, InputDataError
-from cloud_connector.strategies import All, Variation, MessageLimit, TimeLimit
+from cloud_connector.data.strategies import All, Variation, MessageLimit, TimeLimit
 import socket
 
 logging.basicConfig(level=logging.DEBUG,
@@ -112,35 +113,6 @@ class ConfiguratorYaml(object):
         return clouds_list
 
 
-class DataSender(object):
-    """
-    Store and send data to cloud.
-    """
-
-    def __init__(self, configurator):
-        """
-        Initialize the mechanisms to store and send data
-        :param configurator: Configurator class.
-        :type configurator: ConfiguratorYaml
-        """
-        self._tsdb = configurator.db
-        self._clouds = configurator.clouds
-
-    def send_data(self, data, device_name):
-        """
-        Save data in TSDB and cloud services
-        :param data:
-        :param device_name:
-        :return:
-        """
-        cloud_names = []
-        if self._clouds:
-            cloud_names = [cloud.insert_data(data, device_name) for cloud in self._clouds]
-            #cloud_names = filter(None, cloud_names)     # Filter all empty clouds
-        logging.debug('Inserting data into TSDB')
-        self._tsdb.insert_data(data, device_name, cloud_names)
-
-
 class Runner(object):
     """
     Reads the devices
@@ -213,7 +185,7 @@ class Runner(object):
             logging.error('Unexpected error: {0} \n{1}'.format(e, traceback.print_exc()))
         finally:
             logging.debug('Run complete, waiting for next run.')
-        logging.info('Run tooks {} seconds'.format(time.time() - start))
+        logging.info('Run tooks {0:.3f} seconds'.format(time.time() - start))
 
     def close_devices_connection(self):
         """
