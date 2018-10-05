@@ -7,6 +7,7 @@ PyDispatcher == 2.0.5
 PyYAML == 3.13
 pubnub == 3.9.0
 requests == 2.19.1
+Flask == 1.0.2
 
 sphinx == 1.7.6
 coverage == 4.5.1

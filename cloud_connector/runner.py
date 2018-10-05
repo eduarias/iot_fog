@@ -9,6 +9,9 @@ from sched import scheduler
 import time
 import traceback
 import socket
+from http import HTTPStatus
+
+from flask import Flask, request
 
 from cloud_connector.data.sender import DataSender
 from cloud_connector.devices import SimDevice
@@ -32,6 +35,9 @@ available_clouds = {'aws': CloudAmazonMQTT,
                     'thethingsio': CloudThingsIO,
                     'pubnub': CloudPubNub,
                     }
+
+
+app = Flask(__name__)
 
 
 class ConfiguratorYaml(object):
@@ -200,18 +206,34 @@ class Runner(object):
         logging.info('Device connection close')
 
 
+# Flask REST API
+try:
+    config = ConfiguratorYaml('config.yml')
+except ConfigurationError as e:
+    sys.exit('Configuration error, exiting application.')
+
+
+@app.route('/sensor/data', methods=['PUT'])
+def insert_data():
+    data_sender = DataSender(config)
+    if not request.is_json:
+        return 'Input data must be a json', HTTPStatus.BAD_REQUEST
+    else:
+        try:
+            request_data = request.get_json()
+            device_name = request_data['name']
+            data = request_data['data']
+        except KeyError:
+            return 'Wrong input data', HTTPStatus.BAD_REQUEST
+        data_sender.send_data(data, device_name)
+        return '', HTTPStatus.NO_CONTENT
+
+
 if __name__ == '__main__':
-
-    try:
-        config = ConfiguratorYaml('config.yml')
-        runner = Runner(config)
-    except ConfigurationError as e:
-        sys.exit('Configuration error, exiting application.')
-
+    runner = Runner(config)
     try:
         runner.start()
-        while True:
-            time.sleep(1000)
+        app.run(debug=True)
     except (KeyboardInterrupt, TypeError, KeyError):
         runner.stop()
     except socket.error:
