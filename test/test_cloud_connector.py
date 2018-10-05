@@ -39,7 +39,7 @@ class TestConfiguratorYaml(unittest.TestCase):
         return mock_influxdb.assert_called_once_with(**self.config_db)
 
     def aws_should_be_configured(self, conf):
-        aws = conf.cloud_list[0]
+        aws = conf.clouds[0]
         self.assertIsInstance(aws, CloudAmazonMQTT)
         self.assertIsInstance(aws.strategy, Variation)
         aws._mqtt_client.tls_set.assert_called_once_with('./keys/aws-iot-rootCA.crt',
@@ -72,17 +72,17 @@ class TestRunner(unittest.TestCase):
 
         runner.close_devices_connection()
 
-        self.assertEqual(config.device_list[0].close.call_count, 2)
+        self.assertEqual(config.devices[0].close.call_count, 2)
 
     def test_run_happy_path(self, mock_influxdb, mock_device, mock_cloud):
 
         config = ConfiguratorYaml('test/resources/config.yml')
-        config.cloud_list[0]._conn_flag = True
+        config.clouds[0]._conn_flag = True
 
         runner = Runner(config)
         runner.read_interval = 1
 
-        for device in runner._device_list:
+        for device in runner._devices:
             device.name = mock.MagicMock(return_value='mocked')
             device.get_data.return_value = {'temperature': 24.05,
                                             'humidity': 52.31,
@@ -90,7 +90,7 @@ class TestRunner(unittest.TestCase):
                                             }
         runner.run()
 
-        self.assertEqual(runner._device_list[0].get_data.call_count, 2)
+        self.assertEqual(runner._devices[0].get_data.call_count, 2)
         self.assertTrue(runner._tsdb.insert_data.called)
         # TODO - Fix the verify call to insert_data
         # self.assertTrue(runner._cloud_list[0]._mqtt_client.called)
@@ -106,11 +106,11 @@ class TestRunner(unittest.TestCase):
         runner = Runner(config)
         runner.read_interval = 1
 
-        for device in runner._device_list:
+        for device in runner._devices:
             device.name = mock.MagicMock(return_value='mocked')
 
-        runner._cloud_list[0].insert_data = mock.MagicMock(side_effect=KeyboardInterrupt)
+        runner._clouds[0].insert_data = mock.MagicMock(side_effect=KeyboardInterrupt)
 
         runner.run()
 
-        self.assertTrue(runner._device_list[0].close.called is True)
+        self.assertTrue(runner._devices[0].close.called is True)
