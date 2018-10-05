@@ -3,19 +3,20 @@ Makes the setup of the classes through configuration and run.
 """
 import logging
 from threading import Thread
-
-from cloud_connector.data.sender import DataSender
-from cloud_connector.devices import SimDevice
-from cloud_connector.data.tsdb import InfluxDB
-from cloud_connector.data.clouds import CloudAmazonMQTT, CloudThingsIO, CloudPubNub
 import sys
 import yaml
 from sched import scheduler
 import time
 import traceback
+import socket
+
+from cloud_connector.data.sender import DataSender
+from cloud_connector.devices import SimDevice
+from cloud_connector.data.tsdb import InfluxDB
+from cloud_connector.data.clouds import CloudAmazonMQTT, CloudThingsIO, CloudPubNub
 from cloud_connector.cc_exceptions import ConnectionTimeout, ConfigurationError, InputDataError
 from cloud_connector.data.strategies import All, Variation, MessageLimit, TimeLimit
-import socket
+
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)-8s %(threadName)-12s %(name)-12s: %(message)s',
