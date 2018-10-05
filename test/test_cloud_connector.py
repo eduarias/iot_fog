@@ -91,7 +91,7 @@ class TestRunner(unittest.TestCase):
         runner.run()
 
         self.assertEqual(runner._devices[0].get_data.call_count, 2)
-        self.assertTrue(runner._tsdb.insert_data.called)
+        self.assertTrue(runner._sender._tsdb.insert_data.called)
         # TODO - Fix the verify call to insert_data
         # self.assertTrue(runner._cloud_list[0]._mqtt_client.called)
 
@@ -109,7 +109,7 @@ class TestRunner(unittest.TestCase):
         for device in runner._devices:
             device.name = mock.MagicMock(return_value='mocked')
 
-        runner._clouds[0].insert_data = mock.MagicMock(side_effect=KeyboardInterrupt)
+        runner._sender._clouds[0].insert_data = mock.MagicMock(side_effect=KeyboardInterrupt)
 
         runner.run()
 

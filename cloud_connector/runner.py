@@ -73,7 +73,6 @@ class ConfiguratorYaml(object):
         except ConnectionTimeout:
             sys.exit('Exiting application.')
 
-    # noinspection PyShadowingNames
     def _configure_devices(self):
         """
         Configure devices
@@ -112,6 +111,35 @@ class ConfiguratorYaml(object):
         return clouds_list
 
 
+class DataSender(object):
+    """
+    Store and send data to cloud.
+    """
+
+    def __init__(self, configurator):
+        """
+        Initialize the mechanisms to store and send data
+        :param configurator: Configurator class.
+        :type configurator: ConfiguratorYaml
+        """
+        self._tsdb = configurator.db
+        self._clouds = configurator.clouds
+
+    def send_data(self, data, device_name):
+        """
+        Save data in TSDB and cloud services
+        :param data:
+        :param device_name:
+        :return:
+        """
+        cloud_names = []
+        if self._clouds:
+            cloud_names = [cloud.insert_data(data, device_name) for cloud in self._clouds]
+            #cloud_names = filter(None, cloud_names)     # Filter all empty clouds
+        logging.debug('Inserting data into TSDB')
+        self._tsdb.insert_data(data, device_name, cloud_names)
+
+
 class Runner(object):
     """
     Reads the devices
@@ -119,14 +147,13 @@ class Runner(object):
 
     def __init__(self, configurator):
         """
-        Intialize the scheduler
+        Initialize the scheduler
         :param configurator: Configurator class.
         :type configurator: ConfiguratorYaml
         """
         self._scheduler = scheduler(time.time, time.sleep)
-        self._tsdb = configurator.db
         self._devices = configurator.devices
-        self._clouds = configurator.clouds
+        self._sender = DataSender(configurator)
         self.read_interval = configurator.read_interval
         self._running = False
 
@@ -172,17 +199,11 @@ class Runner(object):
         start = time.time()
         try:
             logging.debug('Starting new run ...')
-            logging.debug('Connecting to devices')
-            data_per_devices = {device.name: device.get_data() for device in self._devices}
             logging.debug('Sending data to cloud services')
-            cloud_names = []
-            if self._clouds:
-                cloud_names = [cloud.insert_data(data, name) for name, data in data_per_devices.items()
-                             for cloud in self._clouds]
-                # Filter all empty clouds
-                cloud_names = filter(None, cloud_names)
-            logging.debug('Inserting data into TSDB')
-            [self._tsdb.insert_data(data, name, cloud_names) for name, data in data_per_devices.items()]
+            for device in self._devices:
+                logging.debug('Connecting to device: {}'.format(device.name))
+                self._sender.send_data(device.get_data(), device.name)
+
         except KeyboardInterrupt:
             self.stop()
         except InputDataError as e:
@@ -200,7 +221,8 @@ class Runner(object):
         logging.info('Closing device connection')
         time.sleep(5)
         if self._devices:
-            [device.close() for device in self._devices]
+            for device in self._devices:
+                device.close()
         logging.info('Device connection close')
 
 
