@@ -237,6 +237,8 @@ if __name__ == '__main__':
 
     try:
         runner.start()
+        while True:
+            time.sleep(1000)
     except (KeyboardInterrupt, TypeError, KeyError):
         runner.stop()
     except socket.error:
