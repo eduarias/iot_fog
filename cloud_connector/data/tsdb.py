@@ -185,7 +185,7 @@ class InfluxDB(TSDatabase):
                  'fields': data}
         logging.debug('Data to be inserted in {}: {}, tags: {}'.format(self.parameters['database'], point, tags))
         if self.db.write_points([point], tags=tags):
-            logging.debug('Data inserted in {}: {}'.format(self.parameters['database'], point))
+            logging.debug('Data inserted.')
         else:
-            logging.info('Data not inserted {}: {}'.format(self.parameters['database'], point))
+            logging.info('Data not inserted.')
 

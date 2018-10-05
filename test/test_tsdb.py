@@ -2,7 +2,7 @@ from __future__ import absolute_import, print_function
 import unittest
 # noinspection PyUnresolvedReferences
 import cloud_connector
-from cloud_connector.tsdb import InfluxDB
+from cloud_connector.data.tsdb import InfluxDB
 from influxdb.resultset import ResultSet
 from unittest import mock
 from datetime import datetime
@@ -13,7 +13,7 @@ import requests
 # noinspection PyUnusedLocal
 class TestsInfluxDB(unittest.TestCase):
 
-    @mock.patch('cloud_connector.tsdb.InfluxDBClient', spec=True)
+    @mock.patch('cloud_connector.data.tsdb.InfluxDBClient', spec=True)
     def test_init_db_exists(self, client_mocked):
 
         InfluxDB.db_exists = mock.MagicMock(return_value=True)
@@ -25,7 +25,7 @@ class TestsInfluxDB(unittest.TestCase):
         self.assertFalse(client_mocked.create_database.called)
 
     @staticmethod
-    @mock.patch('cloud_connector.tsdb.InfluxDBClient', spec=True)
+    @mock.patch('cloud_connector.data.tsdb.InfluxDBClient', spec=True)
     def test_init_db_not_exists(client_mocked):
         InfluxDB.db_exists = mock.PropertyMock(return_value=False)
 
@@ -36,7 +36,7 @@ class TestsInfluxDB(unittest.TestCase):
         influx.db.create_database.assert_called_once_with('mockdb')
 
     # noinspection PyUnusedLocal
-    @mock.patch('cloud_connector.tsdb.InfluxDBClient', spec=True)
+    @mock.patch('cloud_connector.data.tsdb.InfluxDBClient', spec=True)
     def test_get_current_time(self, mocked_client):
         # Mock response form InfluxDB
         diagnostics = ResultSet({'series': [{'name': 'build',
@@ -56,7 +56,7 @@ class TestsInfluxDB(unittest.TestCase):
         current_time = influx.get_current_time()
         self.assertEqual(current_time, datetime(2016, 4, 15, 21, 29, 31, 886241, tzinfo=tzutc()))
 
-    @mock.patch('cloud_connector.tsdb.InfluxDBClient', spec=True)
+    @mock.patch('cloud_connector.data.tsdb.InfluxDBClient', spec=True)
     def test_connect_to_db_error(self, mocked_client):
         """
         DB connection error raises a ConnectionError exception
@@ -66,7 +66,7 @@ class TestsInfluxDB(unittest.TestCase):
             self.influx_error = InfluxDB('192.168.1.8', '8086', 'root', 'root', 'mockdb')
 
     @staticmethod
-    @mock.patch('cloud_connector.tsdb.InfluxDBClient', spec=True)
+    @mock.patch('cloud_connector.data.tsdb.InfluxDBClient', spec=True)
     def test_db_not_on_server(mocked_client):
         """
         DB does not exists in server
@@ -78,7 +78,7 @@ class TestsInfluxDB(unittest.TestCase):
         influx = InfluxDB('host', '9999', 'user', 'password', 'mockdb')
         influx.db.create_database.assert_called_once_with('mockdb')
 
-    @mock.patch('cloud_connector.tsdb.InfluxDBClient', spec=True)
+    @mock.patch('cloud_connector.data.tsdb.InfluxDBClient', spec=True)
     def test_db_on_server(self, mocked_client):
         """
         DB already exists in server
@@ -91,7 +91,7 @@ class TestsInfluxDB(unittest.TestCase):
         self.assertFalse(influx.db.create_database.called)
 
     @staticmethod
-    @mock.patch('cloud_connector.tsdb.InfluxDBClient', spec=True)
+    @mock.patch('cloud_connector.data.tsdb.InfluxDBClient', spec=True)
     def test_insert_data(mocked_client):
         """
         Data is inserted in database
@@ -108,7 +108,7 @@ class TestsInfluxDB(unittest.TestCase):
         influx.db.write_points.assert_called_once_with([point], tags={'device': 'device_name'})
 
     @staticmethod
-    @mock.patch('cloud_connector.tsdb.InfluxDBClient', spec=True)
+    @mock.patch('cloud_connector.data.tsdb.InfluxDBClient', spec=True)
     def test_insert_data_failed(mocked_client):
         """
         Data is not inserted in database
