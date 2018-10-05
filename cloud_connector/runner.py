@@ -2,6 +2,7 @@
 Makes the setup of the classes through configuration and run.
 """
 import logging
+from threading import Thread
 
 from cloud_connector.devices import SimDevice
 from cloud_connector.tsdb import InfluxDB
@@ -165,7 +166,7 @@ class Runner(object):
             logging.info('Starting runners to read devices')
             self._running = True
             self._periodic(self.run)
-            self._scheduler.run()
+            Thread(target=self._scheduler.run).start()
         else:
             logging.info('No devices detected, scheduler not executing.')
 
