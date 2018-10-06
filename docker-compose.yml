@@ -3,9 +3,10 @@ services:
   cloud_connector:
     build: .
   influxdb:
-    image: influxdb:1.5.4-alpine
+    image: influxdb:1.5-alpine
     ports:
     - "8086:8086"
-    environment:
-     - INFLUXDB_ADMIN_USER=root
-     - INFLUXDB_ADMIN_PASSWORD=root
+  chronograf:
+    image: chronograf:1.5-alpine
+    ports:
+    - "8888:8888"
