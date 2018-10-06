@@ -215,6 +215,10 @@ except ConfigurationError as e:
 
 @app.route('/sensor/data', methods=['PUT'])
 def insert_data():
+    """
+    Get the data to the sensor and save it
+    :return: HTTP response
+    """
     data_sender = DataSender(config)
     if not request.is_json:
         logging.debug('Input data is not a json')
@@ -235,7 +239,7 @@ if __name__ == '__main__':
     runner = Runner(config)
     try:
         runner.start()
-        app.run(host='0.0.0.0', port=8080, debug=True)
+        app.run(host='0.0.0.0', port=8080, debug=False)
     except (KeyboardInterrupt, TypeError, KeyError):
         runner.stop()
     except socket.error:

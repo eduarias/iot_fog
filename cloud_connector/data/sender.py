@@ -1,3 +1,7 @@
+"""
+Class to handle the send data to TSDB and clouds.
+"""
+
 import logging
 
 
