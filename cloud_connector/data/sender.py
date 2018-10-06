@@ -22,6 +22,9 @@ class DataSender(object):
         :param device_name:
         :return:
         """
+        for key, value in data.items():
+            if isinstance(value, int):
+                data[key] = float(value)
         cloud_names = []
         if self._clouds:
             cloud_names = [cloud.insert_data(data, device_name) for cloud in self._clouds]

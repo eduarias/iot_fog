@@ -217,12 +217,14 @@ except ConfigurationError as e:
 def insert_data():
     data_sender = DataSender(config)
     if not request.is_json:
+        logging.debug('Input data is not a json')
         return 'Input data must be a json', HTTPStatus.BAD_REQUEST
     else:
         try:
             request_data = request.get_json()
-            device_name = request_data['name']
+            device_name = request_data['device_name']
             data = request_data['data']
+            logging.debug('Received data: \{}'.format(request_data))
         except KeyError:
             return 'Wrong input data', HTTPStatus.BAD_REQUEST
         data_sender.send_data(data, device_name)
@@ -233,7 +235,7 @@ if __name__ == '__main__':
     runner = Runner(config)
     try:
         runner.start()
-        app.run(debug=True)
+        app.run(host='0.0.0.0', port=8080, debug=True)
     except (KeyboardInterrupt, TypeError, KeyError):
         runner.stop()
     except socket.error:
