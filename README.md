@@ -26,7 +26,7 @@ In the folder *cloud_connector* use the file *config.yml* to configure the appli
 There is an endpoint open for devices to send data.
 `PUT /sensor/data`
 ```json
-{"name": <String>,
+{"device_name": <String>,
  "data": {
     "measure1": <Float>,
     "measure2": <Float>
