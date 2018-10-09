@@ -3,19 +3,23 @@ Makes the setup of the classes through configuration and run.
 """
 import logging
 from threading import Thread
-
-from cloud_connector.data.sender import DataSender
-from cloud_connector.devices import SimDevice
-from cloud_connector.data.tsdb import InfluxDB
-from cloud_connector.data.clouds import CloudAmazonMQTT, CloudThingsIO, CloudPubNub
 import sys
 import yaml
 from sched import scheduler
 import time
 import traceback
+import socket
+from http import HTTPStatus
+
+from flask import Flask, request
+
+from cloud_connector.data.sender import DataSender
+from cloud_connector.devices import SimDevice
+from cloud_connector.data.tsdb import InfluxDB
+from cloud_connector.data.clouds import CloudAmazonMQTT, CloudThingsIO, CloudPubNub
 from cloud_connector.cc_exceptions import ConnectionTimeout, ConfigurationError, InputDataError
 from cloud_connector.data.strategies import All, Variation, MessageLimit, TimeLimit
-import socket
+
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(levelname)-8s %(threadName)-12s %(name)-12s: %(message)s',
@@ -31,6 +35,9 @@ available_clouds = {'aws': CloudAmazonMQTT,
                     'thethingsio': CloudThingsIO,
                     'pubnub': CloudPubNub,
                     }
+
+
+app = Flask(__name__)
 
 
 class ConfiguratorYaml(object):
@@ -199,18 +206,43 @@ class Runner(object):
         logging.info('Device connection close')
 
 
-if __name__ == '__main__':
+class RestInterface(object):
 
+    def __init__(self, configurator):
+        self.config = configurator
+
+    @app.route('/sensor/data', methods=['PUT'])
+    def insert_data():
+        """
+        Get the data to the sensor and save it
+        :return: HTTP response
+        """
+        data_sender = DataSender(config)
+        if not request.is_json:
+            logging.debug('Input data is not a json')
+            return 'Input data must be a json', HTTPStatus.BAD_REQUEST
+        else:
+            try:
+                request_data = request.get_json()
+                device_name = request_data['device_name']
+                data = request_data['data']
+                logging.debug('Received data: \{}'.format(request_data))
+            except KeyError:
+                return 'Wrong input data', HTTPStatus.BAD_REQUEST
+            data_sender.send_data(data, device_name)
+            return '', HTTPStatus.NO_CONTENT
+
+
+if __name__ == '__main__':
     try:
         config = ConfiguratorYaml('config.yml')
-        runner = Runner(config)
     except ConfigurationError as e:
         sys.exit('Configuration error, exiting application.')
-
+    runner = Runner(config)
+    rest = RestInterface(config)
     try:
         runner.start()
-        while True:
-            time.sleep(1000)
+        app.run(host='0.0.0.0', port=8080, debug=False)
     except (KeyboardInterrupt, TypeError, KeyError):
         runner.stop()
     except socket.error:

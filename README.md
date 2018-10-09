@@ -22,6 +22,19 @@ sudo pip install -r requirements.txt
 ## Configuration
 In the folder *cloud_connector* use the file *config.yml* to configure the application. There are sections for device, tsdb and cloud
 
+### REST API
+There is an endpoint open for devices to send data.
+`PUT /sensor/data`
+```json
+{"device_name": <String>,
+ "data": {
+    "measure1": <Float>,
+    "measure2": <Float>
+ }
+}
+```
+There are two required fields: `name` and `data`, *name* is a string to differentiate devices and data it's a JSON object with key for the measure name and a value.
+
 ### Devices
 Openmote is not currently, since coap library by OpenWSN does not support Python 3. At this moment this section can be simulated only.
 
