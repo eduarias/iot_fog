@@ -207,6 +207,9 @@ class Runner(object):
 
 
 class RestInterface(object):
+    """
+    Define REST interfaces
+    """
 
     def __init__(self, configurator):
         self.config = configurator
