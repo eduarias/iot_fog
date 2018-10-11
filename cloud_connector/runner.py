@@ -206,34 +206,26 @@ class Runner(object):
         logging.info('Device connection close')
 
 
-class RestInterface(object):
+@app.route('/sensor/data', methods=['PUT'])
+def insert_data():
     """
-    Define REST interfaces
+    Get the data to the sensor and save it
+    :return: HTTP response
     """
-
-    def __init__(self, configurator):
-        self.config = configurator
-
-    @app.route('/sensor/data', methods=['PUT'])
-    def insert_data():
-        """
-        Get the data to the sensor and save it
-        :return: HTTP response
-        """
-        data_sender = DataSender(config)
-        if not request.is_json:
-            logging.debug('Input data is not a json')
-            return 'Input data must be a json', HTTPStatus.BAD_REQUEST
-        else:
-            try:
-                request_data = request.get_json()
-                device_name = request_data['device_name']
-                data = request_data['data']
-                logging.debug('Received data: \{}'.format(request_data))
-            except KeyError:
-                return 'Wrong input data', HTTPStatus.BAD_REQUEST
-            data_sender.send_data(data, device_name)
-            return '', HTTPStatus.NO_CONTENT
+    data_sender = DataSender(config)
+    if not request.is_json:
+        logging.debug('Input data is not a json')
+        return 'Input data must be a json', HTTPStatus.BAD_REQUEST
+    else:
+        try:
+            request_data = request.get_json()
+            device_name = request_data['device_name']
+            data = request_data['data']
+            logging.debug('Received data: \{}'.format(request_data))
+        except KeyError:
+            return 'Wrong input data', HTTPStatus.BAD_REQUEST
+        data_sender.send_data(data, device_name)
+        return '', HTTPStatus.NO_CONTENT
 
 
 if __name__ == '__main__':
@@ -242,7 +234,6 @@ if __name__ == '__main__':
     except ConfigurationError as e:
         sys.exit('Configuration error, exiting application.')
     runner = Runner(config)
-    rest = RestInterface(config)
     try:
         runner.start()
         app.run(host='0.0.0.0', port=8080, debug=False)
