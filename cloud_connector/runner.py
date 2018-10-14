@@ -12,6 +12,7 @@ import socket
 from http import HTTPStatus
 
 from flask import Flask, request
+from flask_restplus import Resource, Api
 
 from cloud_connector.data.sender import DataSender
 from cloud_connector.devices import SimDevice
@@ -38,6 +39,7 @@ available_clouds = {'aws': CloudAmazonMQTT,
 
 
 app = Flask(__name__)
+api = Api(app)
 
 
 class ConfiguratorYaml(object):
@@ -206,26 +208,27 @@ class Runner(object):
         logging.info('Device connection close')
 
 
-@app.route('/sensor/data', methods=['PUT'])
-def insert_data():
-    """
-    Get the data to the sensor and save it
-    :return: HTTP response
-    """
-    data_sender = DataSender(config)
-    if not request.is_json:
-        logging.debug('Input data is not a json')
-        return 'Input data must be a json', HTTPStatus.BAD_REQUEST
-    else:
-        try:
-            request_data = request.get_json()
-            device_name = request_data['device_name']
-            data = request_data['data']
-            logging.debug('Received data: \{}'.format(request_data))
-        except KeyError:
-            return 'Wrong input data', HTTPStatus.BAD_REQUEST
-        data_sender.send_data(data, device_name)
-        return '', HTTPStatus.NO_CONTENT
+@api.route('/sensor/data')
+class RestData(Resource):
+    def put(self):
+        """
+        Get the data to the sensor and save it
+        :return: HTTP response
+        """
+        data_sender = DataSender(config)
+        if not request.is_json:
+            logging.debug('Input data is not a json')
+            return 'Input data must be a json', HTTPStatus.BAD_REQUEST
+        else:
+            try:
+                request_data = request.get_json()
+                device_name = request_data['device_name']
+                data = request_data['data']
+                logging.debug('Received data: \{}'.format(request_data))
+            except KeyError:
+                return 'Wrong input data', HTTPStatus.BAD_REQUEST
+            data_sender.send_data(data, device_name)
+            return '', HTTPStatus.NO_CONTENT
 
 
 if __name__ == '__main__':
