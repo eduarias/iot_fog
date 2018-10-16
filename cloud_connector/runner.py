@@ -210,7 +210,7 @@ class Runner(object):
 
 @api.route('/sensor/data')
 class RestData(Resource):
-    def put(self):
+    def post(self):
         """
         Get the data to the sensor and save it
         :return: HTTP response
